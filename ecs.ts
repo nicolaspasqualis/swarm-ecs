@@ -1,37 +1,8 @@
-/* 
-# notes
-
-if queries support operations like containsall, contains some, contains none, contains only, and, or, etc.
-the pure archetypal system looses the capability to quickly remove the entity from its previous 
-archetype container and add it to the new one after its component list changed
-!!!WRONG: entities wont have to be removed _just_ from its previous archetype, it will have to be removed from all its sub-archetypes too.
-  I think a "query cache" abstraction is enough, 
-    and its also a better option than each query object keeping its own cache and using mutating calls to invalidate/update
-
-probably both Archetype based entity selector and advanced component queries should exist. component queries with advanced operators can also use cache with automatic invalidation
-if we iterate over each of the cached queries, check if it matches against the current entity configuration, 
-and then add it or remove it from the cached list.
-   actually, "Archetype based entity selector" are just a containsAll component-query
-
-something to note, is that both systems will need to make use of the component-to-archetype mapping code.
-
-a map of archetypes to entities will be needed for the archetypequeries
-
-allow alternatives to the primitive number-based bitmask implementation? uint arrays? bitmask "lists"? the idea is to support more than 32 comps
-      
-*/
-
 function ECS() {
-  const archetypes = BitmaskArchetypeRegistry();
-  const queryCache = QueryCache(); // TODO: enable cache systems to be injected?
-  const entities = new Map(); // TODO: enable entity systems to be injected? for testing
+  const archetypeResolver: ArchetypeResolver = BitmaskArchetypeResolver();
+  const entityIndex: EntityIndex = QueryEntitiesIndex();
+  const entities: Map<string, Entity> = new Map();
   const systems: System[] = [];
-
-  const entityManager: EntityManager = {
-    archetypeChanged: (entity) => {
-      queryCache.invalidate(entity);
-    },
-  }
 
   const ecs = {
     System: (name: string, query: Query, logic: (entities: Entity[]) => void) => {
@@ -39,27 +10,32 @@ function ECS() {
     },
 
     Entity: (id: string) => {
-      const entity = Entity(id, archetypes, entityManager);
+      const entity = Entity(id, archetypeResolver, entityIndex);
       entities.set(entity.id, entity);
-      queryCache.invalidate(entity);
+      entityIndex.update(entity);
       return entity;
     },
 
     Query: (components: string[]) => {
-      const archetype = archetypes.getAll(components)
-      return CachedQuery(ArchetypeQuery(archetype), String(archetype), queryCache)
+      const archetype = archetypeResolver.getAll(components)
+      return IndexedQuery(
+        ArchetypeQuery(archetype, archetypeResolver), 
+        String(archetype), 
+        entityIndex
+      )
     },
 
     deleteEntity: (entity: Entity) => { 
       entities.delete(entity.id);
-      queryCache.invalidate(entity);
+      entityIndex.update(entity);
     },
 
     getEntity: (id: string) => entities.get(id),
 
     run: () => {
+      const entityArray = [...entities.values()]
       for (const system of systems) {
-        system.update(system.query([...entities.values()]));
+        system.update(entityArray);
       }
     },
   };
@@ -69,46 +45,48 @@ function ECS() {
 
 type Entity = {
   id: string;
-  getArchetype: () => number;
+  getArchetype: () => Archetype;
   getComponent: (name: string) => Component | undefined;
   hasComponent: (name: string) => boolean;
   addComponent: (component: Component) => void;
   deleteComponent: (component: Component) => void;
 }
 
-type EntityManager = {
-  archetypeChanged: (entity: Entity) => void;
-}
-
-function Entity(id: string, archetypeRegistry: ArchetypeRegistry, entityManager: EntityManager): Entity {
-  let archetype = 0;
+function Entity(id: string, archetypeResolver: ArchetypeResolver, entityIndex: EntityIndex): Entity {
   const components = new Map();
-
-  function setArchetype(newArchetype: number) {
-    archetype = newArchetype;
-    entityManager.archetypeChanged(entity);
-  }
-
-  const entity = {
+  let archetype: Archetype = 0;
+  
+  const entity: Entity = {
     id,
     getArchetype: () => archetype,
     getComponent: (name: string) => components.get(name),
     hasComponent: (name: string) => components.has(name),
     addComponent: (component: Component) => {
       components.set(component.name, component);
-      setArchetype(Bitmask.add(archetype, archetypeRegistry.get(component.name)));
+      archetype = archetypeResolver.add(archetype, archetypeResolver.get(component.name));
+      entityIndex.update(entity);
     },
     deleteComponent: (component: Component) => {
       components.delete(component.name);
-      setArchetype(Bitmask.remove(archetype, archetypeRegistry.get(component.name)));
+      archetype = archetypeResolver.remove(archetype, archetypeResolver.get(component.name));
+      entityIndex.update(entity);
     }
   }
 
   return entity;
 }
 
-type Component = { name: string, data: any }
-const Component = (name: string, data: any): Component => ({ name, data })
+type Archetype = number;
+
+type Component = { 
+  name: string;
+  data: any;
+}
+
+const Component = (
+  name: string, 
+  data: any,
+): Component => ({ name, data })
 
 type System = {
   name: string;
@@ -116,100 +94,135 @@ type System = {
   update: (entities: Entity[]) => void;
 }
 
-function System(name: string, query: Query, logic: (entities: Entity[]) => void): System {
-  const update = (entities: Entity[]) => {
-    logic(entities);
+const System = (
+  name: string, 
+  query: Query, 
+  logic: (entities: Entity[]) => void
+): System => ({ 
+  name, 
+  query, 
+  update: (entities: Entity[]) => { 
+    logic(query.filter(entities)) 
+  }
+})
+
+type Query = {
+  // returns true if the entity matches with the query
+  match: (entity: Entity) => boolean,
+  // returns a filtered list of all entities that match with the query
+  filter: (entities: Entity[]) => Entity[],
+}
+
+function ArchetypeQuery(archetype: Archetype, resolver: ArchetypeResolver): Query {
+  const query = {
+    match: (entity: Entity) => resolver.contains(entity.getArchetype(), archetype),
+    filter: (entities: Entity[]) => entities.filter(query.match),
   };
-
-  return { name, query, update };
+  return query;
 }
 
-type Query = (entities: Entity[]) => Entity[]
-
-function ArchetypeQuery(archetype: number): Query {
-  return (entities: Entity[]) => entities.filter(
-    e => Bitmask.contains(e.getArchetype(), archetype)
-  )
-}
-
-function CachedQuery(query: Query, cacheKey: string, queryCache: QueryCache): Query {
-  return (entities: Entity[]) =>  {
-    const cachedResult = queryCache.get(cacheKey);
-    
-    if (!cachedResult) {
-      const result = query(entities);
-      queryCache.set(cacheKey, result);
-      return result;
-    }
-
-    return cachedResult;
+function IndexedQuery(query: Query, indexKey: string, entityIndex: EntityIndex): Query {
+  return {
+    match: query.match,
+    filter: (entities: Entity[]) =>  {
+      const indexedResult = entityIndex.get(indexKey);
+      
+      if (!indexedResult) {
+        const result = query.filter(entities);
+        entityIndex.set(indexKey, result);
+        return result;
+      }
+  
+      return indexedResult;
+    },
   }
 }
 
-
-type QueryCache = {
+type EntityIndex = {
   get: (key: string) => Entity[];
   set: (key: string, entities: Entity[]) => void;
-  invalidate: (entity: Entity) => void;
+  update: (entity: Entity) => void;
 }
 
-function QueryCache(): QueryCache {
-  const cachedEntities = new Map();
+function QueryEntitiesIndex(): EntityIndex {
+  const queryResultsIndex = new Map();
+
   return {
-    get: (key: string) => cachedEntities.get(key),
-    set: (key: string, entities: Entity[]) => {
-      cachedEntities.set(key, entities);
+    get: (key: string) => {
+      return queryResultsIndex.get(key);
     },
-    invalidate: (entity: Entity) => {
-      cachedEntities.clear(); // TODO: invalidate only affected queries
+    set: (key: string, entities: Entity[]) => {
+      queryResultsIndex.set(key, entities);
+    },
+    update: (entity: Entity) => {
+      // TODO: update each indexed query granularly 
+      queryResultsIndex.clear();
     }
   }
 }
 
-type ArchetypeRegistry = {
-  get: (component: string) => number;
-  getAll: (components: string[]) => number;
+type ArchetypeResolver = {
+  get: (component: string) => Archetype,
+  getAll: (components: string[]) => Archetype,
+  add: (source: Archetype, toAdd: Archetype) => Archetype,
+  contains: (container: Archetype, contained: Archetype) => boolean,
+  remove: (source: Archetype, toRemove: Archetype) => Archetype,
+  merge: (masks: Archetype[]) => Archetype,
 }
 
-function BitmaskArchetypeRegistry(): ArchetypeRegistry {
+function BitmaskArchetypeResolver(): ArchetypeResolver {
   const componentTypesToBitIndex = new Map();
 
-  const get = (component: string) => {
-    if(!componentTypesToBitIndex.has(component)) {
-      componentTypesToBitIndex.set(component, componentTypesToBitIndex.size);
+  const resolver = {
+    get: (component: string): Archetype => {
+      if(!componentTypesToBitIndex.has(component)) {
+        componentTypesToBitIndex.set(component, componentTypesToBitIndex.size);
+      }
+      return Bitmask.fromBitIndex(componentTypesToBitIndex.get(component));
+    },
+    getAll: (components: string[]): Archetype => {
+      return Bitmask.merge(components.map(type => resolver.get(type)));
+    },
+    add: (source: Archetype, toAdd: Archetype) => {
+      return Bitmask.add(source, toAdd);
+    },
+    remove: (source: Archetype, toRemove: Archetype) => {
+      return Bitmask.remove(source, toRemove);
+    },
+    contains: (container: Archetype, contained: Archetype) => {
+      return Bitmask.contains(container, contained);
+    },
+    merge: (masks: Archetype[]) => {
+      return Bitmask.merge(masks);
     }
-
-    return Bitmask.fromBitIndex(componentTypesToBitIndex.get(component));
   }
 
-  const getAll = (components: string[]) => Bitmask.merge(components.map(type => get(type)));
-
-  return {
-    get,
-    getAll
-  }
+  return resolver;
 }
 
 const Bitmask = {
+  // convert a bit index to its respective mask
   fromBitIndex: (index: number) => {
     return (1 << index);
   },
+  // combine two masks
   add: (sourceMask: number, maskToAdd: number) => {
     return sourceMask | maskToAdd;
   },
+  // remove one mask from another
   remove: (sourceMask: number, maskToRemove: number) => {
     return sourceMask & ~maskToRemove;
   },
+  // check if one mask contains another
   contains: (containerMask: number, containedMask: number) => {
     return (containerMask & containedMask) === containedMask;
   },
+  // combine multiple masks
   merge: (masks: number[]) => {
     let merged = 0;
-
     for (let mask of masks) {
       merged |= mask;
     }
-
     return merged;
   }
 }
