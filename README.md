@@ -8,3 +8,4 @@ TODO
 - open the ECS internals to be injected and allow more custom implementations
 - remove entity array from ecs state, into EntityIndex
 - remove plain strings as query index keys
+- optimize entity object memory usage. wrapped classes?
