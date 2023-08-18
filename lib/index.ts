@@ -1,10 +1,20 @@
 import { ArchetypeResolver, BitmaskArchetypeResolver } from "./archetype";
 import { EntityIndex, EntitiesByQueryIndex } from "./entityIndex";
 import { Query, ArchetypeQuery, IndexedQuery } from "./query";
+import { Component } from "./component";
 import { System } from "./system";
 import { Entity } from "./entity";
 
-function ECS() {
+type ECS = {
+  System: (name: string, query: Query, logic: (entities: Entity[]) => void) => void,
+  Entity: (id: string) => Entity,
+  Query: (components: string[]) => Query,
+  deleteEntity: (entity: Entity) => void,
+  getEntity: (id: string) => Entity | undefined,
+  run: () => void,
+}
+
+function ECS(): ECS {
   const archetypeResolver: ArchetypeResolver = BitmaskArchetypeResolver();
   const entityIndex: EntityIndex = EntitiesByQueryIndex();
   const entities: Map<string, Entity> = new Map();
@@ -53,4 +63,4 @@ function ECS() {
   return ecs;
 }
 
-export { ECS, Entity, System, Query }
+export { ECS, Entity, Component, System, Query }
