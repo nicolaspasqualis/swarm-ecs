@@ -2,8 +2,13 @@ import { Query } from "./query";
 import { Entity } from "./entity";
 
 export type System = {
+  // Name used to identify the system
   name: string;
+
+  // Query used to fetch the required entities on each tick
   query: Query;
+  
+  // Runs the system one tick
   update: (entities: Entity[]) => void;
 }
 

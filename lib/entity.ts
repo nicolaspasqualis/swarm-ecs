@@ -3,11 +3,22 @@ import { EntityIndex } from "./entityIndex";
 import { Component } from "./component";
 
 export type Entity = {
+  // Entity ID
   id: string;
+
+  // Returns this entity's archetype
   getArchetype: () => Archetype;
+
+  // Returns a reference to the component by name 
   getComponent: (name: string) => Component | undefined;
+
+  // Checks if the entity contains a component by name
   hasComponent: (name: string) => boolean;
+
+  // Adds a component to this entity
   addComponent: (component: Component) => void;
+  
+  // Removes the component from this entity
   deleteComponent: (component: Component) => void;
 }
   

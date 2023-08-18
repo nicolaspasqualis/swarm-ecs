@@ -6,11 +6,22 @@ import { System } from "./system";
 import { Entity } from "./entity";
 
 type ECS = {
+  // Creates and registers a new system
   System: (name: string, query: Query, logic: (entities: Entity[]) => void) => void,
+
+  // Creates and registers a new entity
   Entity: (id: string) => Entity,
+  
+  // Creates a registers a new  uery
   Query: (components: string[]) => Query,
+  
+  // Removes the provided entity from  the ECS 
   deleteEntity: (entity: Entity) => void,
+  
+  // Retrieves an entity
   getEntity: (id: string) => Entity | undefined,
+  
+  // Advances the ECS one tick by running each system
   run: () => void,
 }
 

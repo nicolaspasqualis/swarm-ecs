@@ -2,12 +2,24 @@ import { Bitmask } from "./bitmask";
 
 export type Archetype = number;
 
+// Interface for managing and manipulating archetypes.
 export type ArchetypeResolver = {
+  // Gets the archetype for a single component type.
   get: (component: string) => Archetype,
+
+  // Gets the merged archetype for a list of component types.
   getAll: (components: string[]) => Archetype,
+
+  // Returns the sum two archetypes.
   add: (source: Archetype, toAdd: Archetype) => Archetype,
+
+  // Checks if an archetype contains another.
   contains: (container: Archetype, contained: Archetype) => boolean,
+
+  // Removes a component type from an existing archetype.
   remove: (source: Archetype, toRemove: Archetype) => Archetype,
+
+  // Merges multiple archetypes into a single archetype.
   merge: (masks: Archetype[]) => Archetype,
 }
 
