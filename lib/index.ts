@@ -1,21 +1,22 @@
 import { ArchetypeResolver, BitmaskArchetypeResolver } from "./archetype";
 import { EntityIndex, EntitiesByQueryIndex } from "./entityIndex";
-import { Query, ArchetypeQuery, IndexedQuery } from "./query";
+import { Query, ArchetypeFilterQuery, ComponentFilter, IndexedQuery } from "./query";
+import { SystemScheduler, StageBasedScheduler, Stages } from "./systemScheduler";
 import { Component } from "./component";
-import { System } from "./system";
+import { System, Stage } from "./system";
 import { Entity } from "./entity";
 
 type ECS = {
   // Creates and registers a new system
-  System: (name: string, query: Query, logic: (entities: Entity[]) => void) => void,
+  System: (name: string, stage: Stage, query: Query, logic: (entities: Entity[]) => void) => void,
 
   // Creates and registers a new entity
   Entity: (id: string) => Entity,
   
-  // Creates a registers a new  uery
-  Query: (components: string[]) => Query,
+  // Creates and registers a new query
+  Query: ((...components: string[]) => Query) & ((filter: ComponentFilter) => Query),
   
-  // Removes the provided entity from  the ECS 
+  // Removes the provided entity from the ECS
   deleteEntity: (entity: Entity) => void,
   
   // Retrieves an entity
@@ -29,15 +30,16 @@ function ECS(): ECS {
   const archetypeResolver: ArchetypeResolver = BitmaskArchetypeResolver();
   const entityIndex: EntityIndex = EntitiesByQueryIndex();
   const entities: Map<string, Entity> = new Map();
-  const systems: System[] = [];
+  const systems: SystemScheduler = StageBasedScheduler();
 
   const ecs = {
     System: (
       name: string,
+      stage: Stage,
       query: Query,
-      logic: (entities: Entity[]) => void
+      logic: (entities: Entity[]) => void,
     ) => {
-      systems.push(System(name, query, logic));
+      systems.addSystem(System(name, stage, query, logic));
     },
 
     Entity: (id: string) => {
@@ -47,11 +49,18 @@ function ECS(): ECS {
       return entity;
     },
 
-    Query: (components: string[]) => {
-      const archetype = archetypeResolver.getAll(components);
+    Query: (...args: any[]) => {
+      const filter: ComponentFilter = typeof args[0] === 'object' // parse argument >
+        ? args[0] // > from ComponentFilter
+        : { all: args as string[] } // > from list of component names
+      
+      const all = filter.all && archetypeResolver.getAll(filter.all);
+      const any = filter.any && archetypeResolver.getAll(filter.any);
+      const none = filter.none && archetypeResolver.getAll(filter.none);
+
       return IndexedQuery(
-        ArchetypeQuery(archetype, archetypeResolver),
-        String(archetype),
+        ArchetypeFilterQuery({all, any, none}, archetypeResolver),
+        String(`${all}-${any}-${none}`),
         entityIndex
       );
     },
@@ -65,7 +74,7 @@ function ECS(): ECS {
 
     run: () => {
       const entityArray = [...entities.values()];
-      for (const system of systems) {
+      for (const system of systems.getSchedule()) {
         system.update(entityArray);
       }
     },
@@ -74,4 +83,4 @@ function ECS(): ECS {
   return ecs;
 }
 
-export { ECS, Entity, Component, System, Query }
+export { ECS, Entity, Component, System, Stages, Query, ComponentFilter }

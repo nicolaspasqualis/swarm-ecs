@@ -1,9 +1,9 @@
-import { ECS, Component } from "../lib/index"
+import { ECS, Component, Stages } from "../lib/index"
 import p5 from "p5"
 
 const ecs = ECS();
 
-const initECS = (ecs: ECS, p: p5) => {
+const initECS = (p: p5) => {
   // settings
   const maxSpeed = 0.9; // in px per ms
   const startingAgents = 100; // num of starting agents
@@ -25,11 +25,9 @@ const initECS = (ecs: ECS, p: p5) => {
   const AgentEntity = "Agent";
   const TrailPointEntity = "TrailPoint";
 
-  ecs.System("InputSystem", ecs.Query([
-      PositionComponent,
-      HealthComponent,
-      LastHitComponent,
-    ]),
+  ecs.System("InputSystem", Stages.UPDATE, ecs.Query(
+      PositionComponent, HealthComponent, LastHitComponent
+    ),
     (entities) => {
       if(p.mouseIsPressed) {
         let trailPoint = ecs.Entity(TrailPointEntity + p.millis());
@@ -57,11 +55,9 @@ const initECS = (ecs: ECS, p: p5) => {
     }
   );
 
-  ecs.System("AgentMovementSystem", ecs.Query([
-      PositionComponent, 
-      SpeedComponent, 
-      NoiseOffsetComponent
-    ]),
+  ecs.System("AgentMovementSystem", Stages.UPDATE, ecs.Query({ 
+      all: [PositionComponent, SpeedComponent, NoiseOffsetComponent]
+    }),
     (entities) => {
       for (const entity of entities) {
         const position = entity.getComponent(PositionComponent)?.data;
@@ -100,11 +96,9 @@ const initECS = (ecs: ECS, p: p5) => {
     }
   );
 
-  ecs.System("RenderAgentSystem", ecs.Query([
-      PositionComponent, 
-      RadiusComponent, 
-      HealthComponent
-    ]), 
+  ecs.System("RenderAgentSystem", Stages.RENDER, ecs.Query({
+      all: [PositionComponent, RadiusComponent, HealthComponent]
+    }), 
     (entities) => {   
       for (const entity of entities) {
         const position = entity.getComponent(PositionComponent)?.data;
@@ -127,10 +121,9 @@ const initECS = (ecs: ECS, p: p5) => {
     }
   );
 
-  ecs.System("RenderTrailSystem", ecs.Query([
-      PositionComponent,
-      TimeComponent,
-    ]),
+  ecs.System("RenderTrailSystem", Stages.RENDER, ecs.Query({
+    all: [PositionComponent, TimeComponent]
+    }),
     (entities) => {
       for (const entity of entities) {
         const position = entity.getComponent(PositionComponent)?.data;
@@ -176,7 +169,7 @@ const initECS = (ecs: ECS, p: p5) => {
 const sketch = (p: p5) => {
   p.setup = () => {
     p.createCanvas(800, 600);
-    initECS(ecs, p);
+    initECS(p);
   };
 
   p.draw = () => {  

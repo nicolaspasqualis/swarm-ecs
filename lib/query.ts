@@ -10,7 +10,40 @@ export type Query = {
   filter: (entities: Entity[]) => Entity[],
 }
 
-export function ArchetypeQuery(archetype: Archetype, resolver: ArchetypeResolver): Query {
+export type ArchetypeFilter = {
+  all?: Archetype,
+  any?: Archetype,
+  none?: Archetype,
+}
+
+export type ComponentFilter = {
+  all?: string[],
+  any?: string[],
+  none?: string[],
+}
+
+export function ArchetypeFilterQuery(filter: ArchetypeFilter, resolver: ArchetypeResolver): Query {
+  const all = filter.all ?? resolver.getEmpty();
+  const any = filter.any ?? resolver.getEmpty();
+  const none = filter.none ?? resolver.getEmpty();
+
+  const query = {
+    match: (entity: Entity) => {
+      const archetype = entity.getArchetype();
+      return (
+        resolver.contains(archetype, all) &&
+        (resolver.intersects(archetype, any) || resolver.contains(archetype, any)) &&
+        !resolver.intersects(archetype, none)
+      )
+    },
+    filter: (entities: Entity[]) => entities.filter(query.match),
+  };
+
+  return query
+}
+
+export function ArchetypeQuery(archetype: Archetype, resolver: ArchetypeResolver)
+: Query {
   const query = {
     match: (entity: Entity) => resolver.contains(entity.getArchetype(), archetype),
     filter: (entities: Entity[]) => entities.filter(query.match),
@@ -18,7 +51,8 @@ export function ArchetypeQuery(archetype: Archetype, resolver: ArchetypeResolver
   return query;
 }
 
-export function IndexedQuery(query: Query, indexKey: string, entityIndex: EntityIndex): Query {
+export function IndexedQuery(query: Query, indexKey: string, entityIndex: EntityIndex)
+: Query {
   return {
     match: query.match,
     filter: (entities: Entity[]) =>  {

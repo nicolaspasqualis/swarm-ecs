@@ -1,4 +1,7 @@
 export const Bitmask = {
+  // returns an empty bitmask
+  empty: () => 0,
+  
   // convert a bit index to its respective mask
   fromBitIndex: (index: number) => {
     return 1 << index;
@@ -17,6 +20,11 @@ export const Bitmask = {
   // check if one mask contains another
   contains: (containerMask: number, containedMask: number) => {
     return (containerMask & containedMask) === containedMask;
+  },
+
+  // check if two masks intersect
+  intersects: (maskA: number, maskB: number) => {
+    return (maskA & maskB) !== 0;
   },
 
   // combine multiple masks
