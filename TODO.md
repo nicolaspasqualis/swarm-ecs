@@ -1,5 +1,4 @@
 TODO advanced features:
-- typed components for typescript clients
 - granular query index updates
 - system update policy function?
     - support single run, frame/time skipping?
