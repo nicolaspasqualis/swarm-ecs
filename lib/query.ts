@@ -51,16 +51,16 @@ export function ArchetypeQuery(archetype: Archetype, resolver: ArchetypeResolver
   return query;
 }
 
-export function IndexedQuery(query: Query, indexKey: string, entityIndex: EntityIndex)
+export function IndexedQuery(query: Query, entityIndex: EntityIndex)
 : Query {
   return {
     match: query.match,
     filter: (entities: Entity[]) =>  {
-      const indexedResult = entityIndex.get(indexKey);
+      const indexedResult = entityIndex.get(query);
       
       if (!indexedResult) {
         const result = query.filter(entities);
-        entityIndex.set(indexKey, result);
+        entityIndex.set(query, result);
         return result;
       }
   

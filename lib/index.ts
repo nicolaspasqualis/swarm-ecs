@@ -60,7 +60,6 @@ function ECS(): ECS {
 
       return IndexedQuery(
         ArchetypeFilterQuery({all, any, none}, archetypeResolver),
-        String(`${all}-${any}-${none}`),
         entityIndex
       );
     },

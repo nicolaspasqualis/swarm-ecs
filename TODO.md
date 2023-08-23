@@ -1,8 +1,9 @@
 TODO advanced features:
-- granular query index updates
-- system update policy function? I imagine that a stateful function/closure wich returns a boolean to evaluate on each tick if the system needs to run is enough
-    - support single run, frame/time skipping?
 - typed components for typescript clients
+- granular query index updates
+- system update policy function?
+    - support single run, frame/time skipping?
+    - I imagine that a stateful function/closure wich returns a boolean to evaluate on each tick if the system needs to run is enough
 - tracing
 - removable systems
 

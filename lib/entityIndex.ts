@@ -1,23 +1,29 @@
+import { Query } from ".";
 import { Entity } from "./entity";
 
 export type EntityIndex = {
-  get: (key: string) => Entity[];
-  set: (key: string, entities: Entity[]) => void;
+  get: (query: Query) => Entity[] | undefined;
+  set: (query: Query, entities: Entity[]) => void;
   update: (entity: Entity) => void;
 }
 
 export function EntitiesByQueryIndex(): EntityIndex {
-  const queryResultsIndex = new Map();
+  const queryResultsIndex = new Map<Query, Entity[]>();
 
   return {
-    get: (key: string) => {
-      return queryResultsIndex.get(key);
+    get: (query: Query) => {
+      return queryResultsIndex.get(query);
     },
-    set: (key: string, entities: Entity[]) => {
-      queryResultsIndex.set(key, entities);
+    set: (query: Query, entities: Entity[]) => {
+      queryResultsIndex.set(query, entities);
     },
     update: (entity: Entity) => {
       // TODO: update each indexed query granularly 
+      // queryResultsIndex should use sets instead for fast lookup if the 
+      // result set contains or not the entity.
+      // if(query.matches(entity)) { result.add(entity)} 
+      // else { result.delete(entity) }
+      
       queryResultsIndex.clear();
     }
   }
