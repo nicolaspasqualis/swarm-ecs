@@ -2,7 +2,7 @@ import { ArchetypeResolver, BitmaskArchetypeResolver } from "./archetype";
 import { EntityIndex, EntitiesByQueryIndex } from "./entityIndex";
 import { Query, ArchetypeFilterQuery, ComponentFilter, IndexedQuery } from "./query";
 import { SystemScheduler, StageBasedScheduler, Stages } from "./systemScheduler";
-import { Component } from "./component";
+import { Component, ComponentType } from "./component";
 import { System, Stage } from "./system";
 import { Entity } from "./entity";
 
@@ -14,7 +14,7 @@ type ECS = {
   Entity: (id: string) => Entity,
   
   // Creates and registers a new query
-  Query: ((...components: string[]) => Query) & ((filter: ComponentFilter) => Query),
+  Query: ((...components: symbol[]) => Query) & ((filter: ComponentFilter) => Query),
   
   // Removes the provided entity from the ECS
   deleteEntity: (entity: Entity) => void,
@@ -82,4 +82,4 @@ function ECS(): ECS {
   return ecs;
 }
 
-export { ECS, Entity, Component, System, Stages, Query, ComponentFilter }
+export { ECS, Entity, ComponentType, System, Stages, Query, ComponentFilter }

@@ -1,8 +1,8 @@
-import { ECS, Component, Stages } from "../lib/index"
+import { ECS, ComponentType, Stages } from "../lib/index"
 import p5 from "p5"
 
 const ecs = ECS();
-
+console.log("DEMO TYPED3");
 const initECS = (p: p5) => {
   // settings
   const maxSpeed = 0.9; // in px per ms
@@ -12,35 +12,37 @@ const initECS = (p: p5) => {
   const maxTrailLength = 300; // length of trail in num of points
   let trailLife = 2000; // duration of a visible trail point in ms
 
-  // components
-  const PositionComponent = "Position";
-  const RadiusComponent = "Radius";
-  const SpeedComponent = "Speed";
-  const HealthComponent = "Health";
-  const LastHitComponent = "LastHit";
-  const NoiseOffsetComponent = "NoiseOffset";
-  const TimeComponent = "Time";
-
   // entities
   const AgentEntity = "Agent";
   const TrailPointEntity = "TrailPoint";
 
+  const Position = ComponentType<{ x: number, y: number }>();
+  const Time = ComponentType<{ time: number }>()
+  const Health = ComponentType<{ health: number }>();
+  const LastHit = ComponentType<{ lastHit: number | null }>();
+  const Speed = ComponentType<{ speedX: number, speedY: number }>();
+  const Radius = ComponentType<{ r: number }>();
+  const NoiseOffset = ComponentType<{ noiseOffsetX: number, noiseOffsetY: number }>();
+
   ecs.System("InputSystem", Stages.UPDATE, ecs.Query(
-      PositionComponent, HealthComponent, LastHitComponent
+    Position.type, Health.type, LastHit.type
     ),
     (entities) => {
       if(p.mouseIsPressed) {
         let trailPoint = ecs.Entity(TrailPointEntity + p.millis());
-        trailPoint.addComponent(Component(PositionComponent, {x: p.mouseX, y: p.mouseY}));
-        trailPoint.addComponent(Component(TimeComponent, { time: Date.now() }));
+        trailPoint.addComponent(Position.create({x: p.mouseX, y: p.mouseY}));
+        trailPoint.addComponent(Time.create({ time: Date.now() }));
       }
 
       for (const entity of entities) {
-        const position = entity.getComponent(PositionComponent)?.data;
-        const health = entity.getComponent(HealthComponent)?.data;
-        const lastHit = entity.getComponent(LastHitComponent)?.data;
+        const position = entity.getComponent(Position)?.data;
+        const health = entity.getComponent(Health)?.data;
+        const lastHit = entity.getComponent(LastHit)?.data;
+        const radius = entity.getComponent(Radius)?.data;
+
+        if(!(position && health && lastHit && radius)) { return }
         
-        if (p.mouseIsPressed && p.dist(p.mouseX, p.mouseY, position.x, position.y) < entity.getComponent(RadiusComponent)?.data.r) {
+        if (p.mouseIsPressed && p.dist(p.mouseX, p.mouseY, position.x, position.y) < radius.r) {
           // deplete agent's health while mouse is pressed on it
           if (lastHit.lastHit === null) {
             lastHit.lastHit = p.millis();
@@ -56,13 +58,15 @@ const initECS = (p: p5) => {
   );
 
   ecs.System("AgentMovementSystem", Stages.UPDATE, ecs.Query({ 
-      all: [PositionComponent, SpeedComponent, NoiseOffsetComponent]
+      all: [Position.type, Speed.type, NoiseOffset.type]
     }),
     (entities) => {
       for (const entity of entities) {
-        const position = entity.getComponent(PositionComponent)?.data;
-        const speed = entity.getComponent(SpeedComponent)?.data;
-        const noiseOffset = entity.getComponent(NoiseOffsetComponent)?.data;
+        const position = entity.getComponent(Position)?.data;
+        const speed = entity.getComponent(Speed)?.data;
+        const noiseOffset = entity.getComponent(NoiseOffset)?.data;
+
+        if(!(position && speed && noiseOffset)) { return }
       
         // update agent's speed based on perlin noise
         speed.speedX = maxSpeed * (p.noise(noiseOffset.noiseOffsetX) - 0.5) * 2;
@@ -97,13 +101,15 @@ const initECS = (p: p5) => {
   );
 
   ecs.System("RenderAgentSystem", Stages.RENDER, ecs.Query({
-      all: [PositionComponent, RadiusComponent, HealthComponent]
+      all: [Position.type, Radius.type, Health.type]
     }), 
     (entities) => {   
       for (const entity of entities) {
-        const position = entity.getComponent(PositionComponent)?.data;
-        const radius = entity.getComponent(RadiusComponent)?.data;
-        const health = entity.getComponent(HealthComponent)?.data;
+        const position = entity.getComponent(Position)?.data;
+        const radius = entity.getComponent(Radius)?.data;
+        const health = entity.getComponent(Health)?.data;
+
+        if(!(position && radius && health)) { return }
       
         if (health.health > 0) {
           // render agent hit-box
@@ -122,14 +128,16 @@ const initECS = (p: p5) => {
   );
 
   ecs.System("RenderTrailSystem", Stages.RENDER, ecs.Query({
-    all: [PositionComponent, TimeComponent]
+    all: [Position.type, Time.type]
     }),
     (entities) => {
       for (const entity of entities) {
-        const position = entity.getComponent(PositionComponent)?.data;
-        const time = entity.getComponent(TimeComponent)?.data.time;
+        const position = entity.getComponent(Position)?.data;
+        const time = entity.getComponent(Time)?.data;
 
-        const timeLived = Date.now() - time;
+        if(!(position && time)) { return }
+
+        const timeLived = Date.now() - time.time;
         
         if (timeLived > trailLife) {
           ecs.deleteEntity(entity);
@@ -148,21 +156,21 @@ const initECS = (p: p5) => {
   for (let i = 0; i < startingAgents; i++) {
     const agentEntity = ecs.Entity(AgentEntity + i);
 
-    agentEntity.addComponent(Component(PositionComponent, {
+    agentEntity.addComponent(Position.create({
       x: startingPoint.x + p.random(-startingPoint.r, startingPoint.r),
       y: startingPoint.y + p.random(-startingPoint.r, startingPoint.r),
     }));
-    agentEntity.addComponent(Component(SpeedComponent, {
+    agentEntity.addComponent(Speed.create({
       speedX: maxSpeed / 2,  // in px per ms
       speedY: maxSpeed / 2, // in px per ms
     }));
-    agentEntity.addComponent(Component(NoiseOffsetComponent, {
+    agentEntity.addComponent(NoiseOffset.create({
       noiseOffsetX: p.random(1000), // perlin noise state offset
       noiseOffsetY: p.random(1000),
     }));
-    agentEntity.addComponent(Component(RadiusComponent, {r: 50}));
-    agentEntity.addComponent(Component(HealthComponent, {health: 1000}));
-    agentEntity.addComponent(Component(LastHitComponent, {lastHit: null}));
+    agentEntity.addComponent(Radius.create({r: 50}));
+    agentEntity.addComponent(Health.create({health: 1000}));
+    agentEntity.addComponent(LastHit.create({lastHit: null}));
   }
 }
 

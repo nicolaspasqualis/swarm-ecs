@@ -4,8 +4,11 @@ import { Component } from "./component";
 export type Entity = {
     id: string;
     getArchetype: () => Archetype;
-    getComponent: (name: string) => Component | undefined;
-    hasComponent: (name: string) => boolean;
+    getComponent: <J, T extends {
+        type: symbol;
+        data: J;
+    }>(type: T) => T | undefined;
+    hasComponent: (type: symbol) => boolean;
     addComponent: (component: Component) => void;
     deleteComponent: (component: Component) => void;
 };

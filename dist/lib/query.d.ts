@@ -11,10 +11,10 @@ export type ArchetypeFilter = {
     none?: Archetype;
 };
 export type ComponentFilter = {
-    all?: string[];
-    any?: string[];
-    none?: string[];
+    all?: symbol[];
+    any?: symbol[];
+    none?: symbol[];
 };
 export declare function ArchetypeFilterQuery(filter: ArchetypeFilter, resolver: ArchetypeResolver): Query;
 export declare function ArchetypeQuery(archetype: Archetype, resolver: ArchetypeResolver): Query;
-export declare function IndexedQuery(query: Query, indexKey: string, entityIndex: EntityIndex): Query;
+export declare function IndexedQuery(query: Query, entityIndex: EntityIndex): Query;

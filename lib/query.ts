@@ -17,9 +17,9 @@ export type ArchetypeFilter = {
 }
 
 export type ComponentFilter = {
-  all?: string[],
-  any?: string[],
-  none?: string[],
+  all?: symbol[],
+  any?: symbol[],
+  none?: symbol[],
 }
 
 export function ArchetypeFilterQuery(filter: ArchetypeFilter, resolver: ArchetypeResolver): Query {

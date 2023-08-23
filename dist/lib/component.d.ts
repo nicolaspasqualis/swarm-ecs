@@ -1,5 +1,12 @@
 export type Component = {
-    name: string;
+    type: symbol;
     data: any;
 };
-export declare const Component: (name: string, data: any) => Component;
+export declare function ComponentType<T>(): {
+    type: symbol;
+    data: T;
+    create: (data: T) => {
+        type: symbol;
+        data: T;
+    };
+};

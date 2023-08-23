@@ -1,12 +1,17 @@
 export type Component = {
   // Component name/type
-  name: string;
+  type: symbol;
   
   // Component data to be read and mutated by systems
   data: any;
 }
 
-export const Component = (
-  name: string, 
-  data: any,
-): Component => ({ name, data })
+
+export function ComponentType<T>() {
+  const typeSymbol = Symbol();
+  return {
+      type: typeSymbol,
+      data: {} as T,
+      create: (data: T) => ({ type: typeSymbol, data })
+  };
+}
