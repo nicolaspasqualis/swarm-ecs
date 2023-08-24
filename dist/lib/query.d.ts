@@ -1,6 +1,7 @@
 import { Archetype, ArchetypeResolver } from "./archetype";
 import { EntityIndex } from "./entityIndex";
 import { Entity } from "./entity";
+import { Component } from "./component";
 export type Query = {
     match: (entity: Entity) => boolean;
     filter: (entities: Entity[]) => Entity[];
@@ -11,9 +12,9 @@ export type ArchetypeFilter = {
     none?: Archetype;
 };
 export type ComponentFilter = {
-    all?: symbol[];
-    any?: symbol[];
-    none?: symbol[];
+    all?: Component[];
+    any?: Component[];
+    none?: Component[];
 };
 export declare function ArchetypeFilterQuery(filter: ArchetypeFilter, resolver: ArchetypeResolver): Query;
 export declare function ArchetypeQuery(archetype: Archetype, resolver: ArchetypeResolver): Query;

@@ -2,19 +2,15 @@ import { ECS, ComponentType, Stages } from "../lib/index"
 import p5 from "p5"
 
 const ecs = ECS();
-console.log("DEMO TYPED3");
+
 const initECS = (p: p5) => {
   // settings
   const maxSpeed = 0.9; // in px per ms
   const startingAgents = 100; // num of starting agents
-  const startingPoint = { x: 500, y: 300, r: 30 };
+  const startingPoint = { x: 1000, y: 150, r: 40 };
   const agentSize = 10; // in px
   const maxTrailLength = 300; // length of trail in num of points
   let trailLife = 2000; // duration of a visible trail point in ms
-
-  // entities
-  const AgentEntity = "Agent";
-  const TrailPointEntity = "TrailPoint";
 
   const Position = ComponentType<{ x: number, y: number }>();
   const Time = ComponentType<{ time: number }>()
@@ -24,16 +20,16 @@ const initECS = (p: p5) => {
   const Radius = ComponentType<{ r: number }>();
   const NoiseOffset = ComponentType<{ noiseOffsetX: number, noiseOffsetY: number }>();
 
-  ecs.System("InputSystem", Stages.UPDATE, ecs.Query(
-    Position.type, Health.type, LastHit.type
+  ecs.System("InputSystem", Stages.PRE_UPDATE, ecs.Query(
+    Position, Health, LastHit
     ),
     (entities) => {
-      if(p.mouseIsPressed) {
-        let trailPoint = ecs.Entity(TrailPointEntity + p.millis());
-        trailPoint.addComponent(Position.create({x: p.mouseX, y: p.mouseY}));
-        trailPoint.addComponent(Time.create({ time: Date.now() }));
-      }
+      if(!p.mouseIsPressed) { return; }
 
+      let trailPoint = ecs.Entity();
+      trailPoint.addComponent(Position.create({x: p.mouseX, y: p.mouseY}));
+      trailPoint.addComponent(Time.create({ time: Date.now() }));
+      
       for (const entity of entities) {
         const position = entity.getComponent(Position)?.data;
         const health = entity.getComponent(Health)?.data;
@@ -42,7 +38,7 @@ const initECS = (p: p5) => {
 
         if(!(position && health && lastHit && radius)) { return }
         
-        if (p.mouseIsPressed && p.dist(p.mouseX, p.mouseY, position.x, position.y) < radius.r) {
+        if (p.dist(p.mouseX, p.mouseY, position.x, position.y) < radius.r) {
           // deplete agent's health while mouse is pressed on it
           if (lastHit.lastHit === null) {
             lastHit.lastHit = p.millis();
@@ -58,7 +54,7 @@ const initECS = (p: p5) => {
   );
 
   ecs.System("AgentMovementSystem", Stages.UPDATE, ecs.Query({ 
-      all: [Position.type, Speed.type, NoiseOffset.type]
+      all: [Position, Speed, NoiseOffset]
     }),
     (entities) => {
       for (const entity of entities) {
@@ -101,7 +97,7 @@ const initECS = (p: p5) => {
   );
 
   ecs.System("RenderAgentSystem", Stages.RENDER, ecs.Query({
-      all: [Position.type, Radius.type, Health.type]
+      all: [Position, Radius, Health]
     }), 
     (entities) => {   
       for (const entity of entities) {
@@ -113,13 +109,13 @@ const initECS = (p: p5) => {
       
         if (health.health > 0) {
           // render agent hit-box
-          p.fill(0,0,0,0);
-          p.stroke(0,0,0,20);
+          p.noFill();
+          p.stroke(0, 0, 0, 20);
           p.ellipse(position.x, position.y, radius.r * 2);
           
           // render actual agent
-          p.fill(0,0,0,100);
-          p.ellipse(position.x, position.y, agentSize);
+          p.fill(0);
+          p.circle(position.x, position.y, 10);
         } else {
           ecs.deleteEntity(entity);
         }
@@ -128,7 +124,7 @@ const initECS = (p: p5) => {
   );
 
   ecs.System("RenderTrailSystem", Stages.RENDER, ecs.Query({
-    all: [Position.type, Time.type]
+    all: [Position, Time]
     }),
     (entities) => {
       for (const entity of entities) {
@@ -154,29 +150,31 @@ const initECS = (p: p5) => {
   );
 
   for (let i = 0; i < startingAgents; i++) {
-    const agentEntity = ecs.Entity(AgentEntity + i);
+    const agent = ecs.Entity();
 
-    agentEntity.addComponent(Position.create({
+    agent.addComponent(Position.create({
       x: startingPoint.x + p.random(-startingPoint.r, startingPoint.r),
       y: startingPoint.y + p.random(-startingPoint.r, startingPoint.r),
     }));
-    agentEntity.addComponent(Speed.create({
+    agent.addComponent(Speed.create({
       speedX: maxSpeed / 2,  // in px per ms
       speedY: maxSpeed / 2, // in px per ms
     }));
-    agentEntity.addComponent(NoiseOffset.create({
+    agent.addComponent(NoiseOffset.create({
       noiseOffsetX: p.random(1000), // perlin noise state offset
       noiseOffsetY: p.random(1000),
     }));
-    agentEntity.addComponent(Radius.create({r: 50}));
-    agentEntity.addComponent(Health.create({health: 1000}));
-    agentEntity.addComponent(LastHit.create({lastHit: null}));
+    agent.addComponent(Radius.create({r: 20}));
+    agent.addComponent(Health.create({health: 1000}));
+    agent.addComponent(LastHit.create({lastHit: null}));
   }
 }
 
 const sketch = (p: p5) => {
   p.setup = () => {
-    p.createCanvas(800, 600);
+    p.disableFriendlyErrors = true;
+    p.noSmooth();
+    p.createCanvas(1920, 300);
     initECS(p);
   };
 
@@ -184,7 +182,7 @@ const sketch = (p: p5) => {
     p.background(200);
     ecs.run();
     p.fill(255, 0, 0);
-    p.text(Math.floor(p.frameRate()), 10, 20);
+    //p.text(Math.floor(p.frameRate()), 10, 20);
   };
 };
 

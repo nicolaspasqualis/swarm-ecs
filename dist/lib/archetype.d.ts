@@ -1,7 +1,8 @@
+import { Component } from "./component";
 export type Archetype = number;
 export type ArchetypeResolver = {
-    get: (component: symbol) => Archetype;
-    getAll: (components: symbol[]) => Archetype;
+    get: (component: Component) => Archetype;
+    getAll: (components: Component[]) => Archetype;
     getEmpty: () => Archetype;
     add: (source: Archetype, toAdd: Archetype) => Archetype;
     contains: (container: Archetype, contained: Archetype) => boolean;

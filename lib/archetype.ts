@@ -1,14 +1,15 @@
 import { Bitmask } from "./bitmask";
+import { Component } from "./component";
 
 export type Archetype = number;
 
 // Interface for managing and manipulating archetypes.
 export type ArchetypeResolver = {
   // Gets the archetype for a single component type.
-  get: (component: symbol) => Archetype;
+  get: (component: Component) => Archetype;
 
   // Gets the merged archetype for a list of component types.
-  getAll: (components: symbol[]) => Archetype;
+  getAll: (components: Component[]) => Archetype;
 
   // Returns an empty (void) archetype
   getEmpty: () => Archetype;
@@ -33,14 +34,14 @@ export function BitmaskArchetypeResolver(): ArchetypeResolver {
   const componentTypesToBitIndex = new Map();
 
   const resolver = {
-    get: (component: symbol): Archetype => {
-      if (!componentTypesToBitIndex.has(component)) {
-        componentTypesToBitIndex.set(component, componentTypesToBitIndex.size);
+    get: (component: Component): Archetype => {
+      if (!componentTypesToBitIndex.has(component.type)) {
+        componentTypesToBitIndex.set(component.type, componentTypesToBitIndex.size);
       }
-      return Bitmask.fromBitIndex(componentTypesToBitIndex.get(component));
+      return Bitmask.fromBitIndex(componentTypesToBitIndex.get(component.type));
     },
-    getAll: (components: symbol[]): Archetype => {
-      return Bitmask.merge(components.map((type) => resolver.get(type)));
+    getAll: (components: Component[]): Archetype => {
+      return Bitmask.merge(components.map((component) => resolver.get(component)));
     },
     getEmpty: () => { 
       return Bitmask.empty();

@@ -1,6 +1,7 @@
 import { Archetype, ArchetypeResolver } from "./archetype";
 import { EntityIndex } from "./entityIndex";
 import { Entity } from "./entity";
+import { Component } from "./component";
 
 export type Query = {
   // returns true if the entity matches with the query
@@ -17,9 +18,9 @@ export type ArchetypeFilter = {
 }
 
 export type ComponentFilter = {
-  all?: symbol[],
-  any?: symbol[],
-  none?: symbol[],
+  all?: Component[],
+  any?: Component[],
+  none?: Component[],
 }
 
 export function ArchetypeFilterQuery(filter: ArchetypeFilter, resolver: ArchetypeResolver): Query {

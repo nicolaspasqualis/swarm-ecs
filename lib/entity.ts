@@ -4,7 +4,7 @@ import { Component } from "./component";
 
 export type Entity = {
   // Entity ID
-  id: string;
+  getId: () => number;
 
   // Returns this entity's archetype
   getArchetype: () => Archetype;
@@ -22,23 +22,23 @@ export type Entity = {
   deleteComponent: (component: Component) => void;
 }
   
-export function Entity(id: string, archetypeResolver: ArchetypeResolver, entityIndex: EntityIndex): Entity {
+export function Entity(id: number, archetypeResolver: ArchetypeResolver, entityIndex: EntityIndex): Entity {
   const components = new Map<symbol, any>();
   let archetype: Archetype = 0;
   
   const entity: Entity = {
-    id,
+    getId: () => id,
     getArchetype: () => archetype,
     getComponent: <J, T extends { type: symbol, data: J }>(type: T) => components.get(type.type) as T | undefined,
     hasComponent: (type: symbol) => components.has(type),
     addComponent: (component: Component) => {
       components.set(component.type, component);
-      archetype = archetypeResolver.add(archetype, archetypeResolver.get(component.type));
+      archetype = archetypeResolver.add(archetype, archetypeResolver.get(component));
       entityIndex.update(entity);
     },
     deleteComponent: (component: Component) => {
       components.delete(component.type);
-      archetype = archetypeResolver.remove(archetype, archetypeResolver.get(component.type));
+      archetype = archetypeResolver.remove(archetype, archetypeResolver.get(component));
       entityIndex.update(entity);
     }
   }

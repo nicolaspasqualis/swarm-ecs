@@ -1,14 +1,14 @@
 import { Query, ComponentFilter } from "./query";
 import { Stages } from "./systemScheduler";
-import { ComponentType } from "./component";
+import { Component, ComponentType } from "./component";
 import { System, Stage } from "./system";
 import { Entity } from "./entity";
 type ECS = {
     System: (name: string, stage: Stage, query: Query, logic: (entities: Entity[]) => void) => void;
-    Entity: (id: string) => Entity;
-    Query: ((...components: symbol[]) => Query) & ((filter: ComponentFilter) => Query);
+    Entity: () => Entity;
+    Query: ((...components: Component[]) => Query) & ((filter: ComponentFilter) => Query);
     deleteEntity: (entity: Entity) => void;
-    getEntity: (id: string) => Entity | undefined;
+    getEntity: (id: number) => Entity | undefined;
     run: () => void;
 };
 declare function ECS(): ECS;

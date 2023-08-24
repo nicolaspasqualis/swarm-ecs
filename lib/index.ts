@@ -11,26 +11,51 @@ type ECS = {
   System: (name: string, stage: Stage, query: Query, logic: (entities: Entity[]) => void) => void,
 
   // Creates and registers a new entity
-  Entity: (id: string) => Entity,
+  Entity: () => Entity,
   
   // Creates and registers a new query
-  Query: ((...components: symbol[]) => Query) & ((filter: ComponentFilter) => Query),
+  Query: ((...components: Component[]) => Query) & ((filter: ComponentFilter) => Query),
   
   // Removes the provided entity from the ECS
   deleteEntity: (entity: Entity) => void,
   
   // Retrieves an entity
-  getEntity: (id: string) => Entity | undefined,
+  getEntity: (id: number) => Entity | undefined,
   
   // Advances the ECS one tick by running each system
   run: () => void,
 }
 
+type IdManager = {
+  useId: () => number;
+  freeId: (id: number) => void;
+}
+
+function IdManager(): IdManager {
+  let nextPositiveId = 0;
+  const recycledIds: number[] = [];
+
+  return {
+    useId: () => {
+      if (recycledIds.length > 0) {
+        return recycledIds.pop() as number;
+      }
+      
+      return ++nextPositiveId;
+    },
+    freeId: (id: number) => {
+      recycledIds.push(id);
+    },
+  };
+}
+
 function ECS(): ECS {
   const archetypeResolver: ArchetypeResolver = BitmaskArchetypeResolver();
   const entityIndex: EntityIndex = EntitiesByQueryIndex();
-  const entities: Map<string, Entity> = new Map();
+  const entities: Map<number, Entity> = new Map();
   const systems: SystemScheduler = StageBasedScheduler();
+  const idManager = IdManager();
+
 
   const ecs = {
     System: (
@@ -42,17 +67,17 @@ function ECS(): ECS {
       systems.addSystem(System(name, stage, query, logic));
     },
 
-    Entity: (id: string) => {
-      const entity = Entity(id, archetypeResolver, entityIndex);
-      entities.set(entity.id, entity);
+    Entity: () => {
+      const entity = Entity(idManager.useId(), archetypeResolver, entityIndex);
+      entities.set(entity.getId(), entity);
       entityIndex.update(entity);
       return entity;
     },
 
     Query: (...args: any[]) => {
-      const filter: ComponentFilter = typeof args[0] === 'object' // parse argument >
+      const filter: ComponentFilter = typeof args[0] === 'object' // parse arguments >
         ? args[0] // > from ComponentFilter
-        : { all: args as string[] } // > from list of component names
+        : { all: args as Component[] } // > from list of component names
       
       const all = filter.all && archetypeResolver.getAll(filter.all);
       const any = filter.any && archetypeResolver.getAll(filter.any);
@@ -65,11 +90,11 @@ function ECS(): ECS {
     },
 
     deleteEntity: (entity: Entity) => {
-      entities.delete(entity.id);
+      entities.delete(entity.getId());
       entityIndex.update(entity);
     },
 
-    getEntity: (id: string) => entities.get(id),
+    getEntity: (id: number) => entities.get(id),
 
     run: () => {
       const entityArray = [...entities.values()];
