@@ -1,12 +1,30 @@
+readme
+
+homepage?
+- swarm demo with UI with iterations/systems&entity metrics.
+
+- ecs explanation/introduction
+- basic interactive/canvas example
+
+
 TODO advanced features:
+- JSDoc
+- entity "delete" method
+- default component values on init/create()
 - granular query index updates
 - shared context (typed), readonly? permissions?
 - write permissions?
-- entity id recycling
 - system update policy function?
     - support single run, frame/time skipping?
     - I imagine that a stateful function/closure wich returns a boolean to evaluate on each tick if the system needs to run is enough
 - tracing
+- add internal delta-time
+- add internal metrics
+    - time between runs
+    - time since start
+    - systems?
+    - entities?
+    - components?
 - removable systems
 
 good-to-have:
