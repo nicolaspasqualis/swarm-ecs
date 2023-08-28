@@ -2,7 +2,7 @@ readme
 
 homepage?
 - swarm demo with UI with iterations/systems&entity metrics.
-
+- architecture diagram but using an actual simulation with systems, entities, components, etc
 - ecs explanation/introduction
 - basic interactive/canvas example
 
