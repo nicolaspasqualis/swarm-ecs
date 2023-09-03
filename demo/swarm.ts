@@ -5,8 +5,8 @@ const ecs = ECS();
 
 const initECS = (p: p5) => {
   // settings
-  const maxSpeed = 0.9; // in px per ms
-  const startingAgents = 100; // num of starting agents
+  const maxSpeed = 0.45; // in px per ms
+  const startingAgents = 20; // num of starting agents
   const startingPoint = { x: 1000, y: 150, r: 40 };
   const agentSize = 10; // in px
   const maxTrailLength = 300; // length of trail in num of points
@@ -182,7 +182,7 @@ const sketch = (p: p5) => {
     p.background(200);
     ecs.run();
     p.fill(255, 0, 0);
-    //p.text(Math.floor(p.frameRate()), 10, 20);
+    p.text(Math.floor(p.frameRate()), 10, 20);
   };
 };
 

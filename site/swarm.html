@@ -1,0 +1,299 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>swarm</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="stylesheet" href="./raster2.css?v=20">
+</head>
+<style>
+
+@font-face {
+  font-family: "InterVar";
+  font-weight: 100 900;
+  font-display: swap;
+  font-style: normal;
+  src: url("./fonts/InterVariable.woff2?v=4.0") format("woff2-variations"),
+       url("./fonts/InterVariable.woff2?v=4.0") format("woff2");
+  src: url("./fonts/InterVariable.woff2?v=4.0") format("woff2") tech("variations");
+}
+@font-face {
+  font-family: "InterVar";
+  font-weight: 100 900;
+  font-display: swap;
+  font-style: italic;
+  src: url("./fonts/InterVariable-Italic.woff2?v=4.0") format("woff2-variations"),
+       url("./fonts/InterVariable-Italic.woff2?v=4.0") format("woff2");
+  src: url("./fonts/InterVariable-Italic.woff2?v=4.0") format("woff2") tech("variations");
+}
+
+:root { --sansFont: "Inter", sans-serif }
+@supports (font-variation-settings: normal) {
+  :root { --sansFont: "InterVar", sans-serif; font-optical-sizing: auto; }
+}
+
+:root { --fontSize: 16px; }
+
+* { letter-spacing: -0.02em !important; }
+
+h1, h2 { font-weight: 400 !important; }
+h3, h4, h5, h6 { font-weight: 480 !important; }
+
+.underline {
+  border-bottom: 2px solid black;
+}
+
+
+video, video:first-child, video:last-child {
+  display:block;
+  margin-top: var(--baseline);
+  margin-bottom: var(--baseline);
+}
+video:only-child { margin:0 }
+* + video { margin-top: calc(var(--baseline) * -1); }
+video.fill, video.cover { -o-object-fit: cover; object-fit: cover }
+r-grid > r-cell > video,
+r-grid > r-cell > p > video {
+  -o-object-fit: contain;
+     object-fit: contain;
+  max-width: 100%;
+}
+
+
+video.top { -o-object-position: center top; object-position: center top; align-self:center }
+video.center { -o-object-position: center center; object-position: center center; align-self:center }
+video.bottom { -o-object-position: center bottom; object-position: center bottom; align-self:center }
+video.left.top { -o-object-position: left top; object-position: left top; align-self:flex-start }
+video.left.center { -o-object-position: left center; object-position: left center; align-self:flex-start }
+video.left.bottom { -o-object-position: left bottom; object-position: left bottom; align-self:flex-start }
+video.right.top { -o-object-position: right top; object-position: right top; align-self:flex-end }
+video.right.center { -o-object-position: right center; object-position: right center; align-self:flex-end }
+video.right.bottom { -o-object-position: right bottom; object-position: right bottom; align-self:flex-end }
+
+</style>
+<body>
+
+  <r-grid columns=8 columns-s=4>
+    <r-cell span=row span-s="row">
+      <h1 class="large">swarm — entity component system</h1>
+    </r-cell>
+    <br>
+    <r-cell span=row span-s=row style="text-align: right;">
+      <video src="atomic.webm" onloadstart="this.playbackRate= 2;" loop autoplay muted class="h-12 right center" ></video>    
+      <br>
+    </r-cell>
+    <r-cell span=5 span-s=row style="align-self: end;">
+        <h2><a class="underline" href="https://en.wikipedia.org/wiki/Entity_component_system">ECS architecture↗</a> for easier experimentation with emergent behavior in simulations and game-like systems.</h2>
+        <br>
+    </r-cell>
+    <hr>
+    <r-cell span=row>
+      <h2>↓</h2>
+    <br>
+    <br>
+    </r-cell>
+    <r-cell span=row>
+      <h2>Design:</h2>
+    </r-cell>
+    <r-cell span=3 span-s=row>
+      <p>This library's main goal is to provide a simple API for combining agent-behavior systems and get complex results easily</p>
+    </r-cell>
+    <r-cell span=3 span-s=row >
+      <p><code><b>Separation</b></code>, <code><b>Alignment</b></code> and <code><b>Cohesion</b></code> systems combined to create a classic boid swarm behavior:</p>
+      <video src="flock.webm" onloadstart="this.playbackRate= 2;" loop autoplay muted class="h-10 center" ></video>
+      <p class="small"><code>separation</code> → <code>alignment</code> → <code>cohesion</code> → <code>movement</code> → <code>render</code> pipeline</p>
+      
+    <br>
+    </r-cell>
+    <r-cell span=3 span-s=row>
+      <ol class="compact">
+        <li><b>Indexed query results</b> for constant-time lookup</li>
+        <li>Bitmask based archetype resolution <b>limited to 32 components</b> per ECS instance</li>
+        <li>Queries with support for <b>all</b>, <b>any</b> and <b>none</b> operators</li>
+        <li>Simple stage-based system execution ordering</li>
+        <li>Typed components API</li>
+        <li>OOP-like entity/component interface</li>
+        <li>Archetypal architecture but <b>without focus on memory layout</b>/cache locality</li>
+      </ol>
+      
+    </r-cell>
+
+
+    <r-cell span=4 span-s=row>
+      <img src="diagram.svg" class="top" ></img>
+    </r-cell>
+    <hr>
+    <r-cell span=row>
+      <h2>↓</h2>
+    <br>
+    <br>
+    </r-cell>
+    <r-cell span=row>
+      <h2>Basic usage:</h2>
+    </r-cell>
+
+
+    <r-cell span=3>
+      <h3>Installing:</h3>
+    </r-cell>
+    <r-cell span=5 span-s=row><h3><a class="underline" href="https://github.com/nicolaspasqualis/swarm-ecs">github↗</a></h3>
+    </r-cell>
+    
+    <r-cell span=row>
+      <h3>Creating an ECS and adding entities:</h3>
+    </r-cell>
+    <r-cell span=3 span-s=row>
+      <p>
+        The <code>ECS</code> instance allows creating and registering new entities through its <code>Entity()</code> function
+        <br>
+      </p>
+    </r-cell>
+    <r-cell span=5 span-s=row>
+      <pre><code>const ecs = ECS();
+const entity = ecs.Entity();</code></pre>
+    </r-cell>
+    
+    <r-cell span=row>
+      <h3>Adding components:</h3>
+    </r-cell>
+
+    <r-cell span=3 span-s=row>
+      <p>
+        New types of components can be declared using the <code>ComponentType<Schema>()</code> function, 
+        and instances of those component types are created through their <code>create()</code> functions.
+      </p>
+    </r-cell>
+    <r-cell span=5 span-s=row>
+      <pre>
+<code>const Position = ComponentType<{ x: number, y: number }>();
+const Velocity = ComponentType<{ velocity: number }>();</code></pre>
+    </r-cell>
+
+    <r-cell span=3 span-s=row>
+      <p></p>
+    </r-cell>
+    <r-cell span=5 span-s=row>
+      <pre><code>entity.addComponent(Position.create({ x: 50, y: 50 }));
+entity.addComponent(Velocity.create({ velocity: 0 }));</code></pre>
+    </r-cell>
+    <r-cell span=row>
+      <h3>Creating systems:</h3>
+    </r-cell>
+    <r-cell span=3 span-s=row>
+      <p>New systems can be registered in the <code>ECS</code> through the <code>System()</code> function.</p>
+      <p>Systems are built using a <b>query</b> that describes the type of entities that this system will process, an <b>update function</b> to process these entities on each ECS "run", and a <b>stage</b> that specifies when the update function runs.</p>
+    </r-cell>
+    <r-cell span=5 span-s=row>
+      <pre><code>ecs.System('movement', Stages.UPDATE, 
+  ecs.Query(Position, Velocity), (entities) => {
+    for (const entity of entities) {
+      const position = entity.getComponent(Position).data;
+      const velocity = entity.getComponent(Velocity).data;
+
+      if (!(position && velocity)) { return; }
+
+      position.x += velocity;
+      position.y += velocity;
+    }
+  }
+);</code></pre>
+    </r-cell>
+    <r-cell span=row>
+      <h3>Query operators:</h3>
+    </r-cell>
+
+    <r-cell span=3 span-s=row>
+      <p>
+        Queries used by systems support combining <code>all</code>, <code>any</code> and <code>none</code> operators in order to have more control over the types of entities that a system receives.
+      </p>
+      <p>
+        For example a system that runs only on entities that are "static" could be expressed like:
+      </p>
+    </r-cell>
+    <r-cell span=5 span-s=row>
+      <pre>
+<code>ecs.System('example', Stages.UPDATE, 
+  ecs.Query({ none: [Velocity] }), (entities) => {
+    // process entities...
+  }
+);</code></pre>
+    </r-cell>
+
+    <r-cell span=3 span-s=row>
+      <p>
+        Or a more complex query to process al "adversary" entities that are 
+        <b>not</b> visible <b>and</b> <em>without</em> health:
+      </p>
+    </r-cell>
+    <r-cell span=5 span-s=row>
+      <pre><code>ecs.System('example', Stages.UPDATE, 
+  ecs.Query({ all: [Adversary], none: [Health, Visible] }), (entities) => {
+    // process entities...
+  }
+);</code></pre>
+    </r-cell>
+
+
+    <r-cell span=row>
+      <h3>System stages:</h3>
+    </r-cell>
+
+    <r-cell span=3 span-s=row>
+      <p>
+        Systems are run in order of registration, but also in order of their defined stages. 
+        Currently the ECS has a set of defined stages that run in the following order:
+      </p>
+    </r-cell>
+    <r-cell span=5 span-s=row>
+      <ol class="compact">
+        <li><code>INIT</code></li>
+        <li><code>POST_INIT</code></li>
+        <li><code>PRE_UPDATE</code></li>
+        <li><code>POST_UPDATE</code></li>
+        <li><code>PRE_RENDER</code></li>
+        <li><code>RENDER</code></li>
+      </ol>
+    </r-cell>
+
+    <r-cell span=3 span-s=row>
+      <b>Example usage:</b>
+      <p>
+        This setup will run the systems in order: 
+        <code>A</code> → <code>C</code> → <code>B</code> → <code>D</code>
+      </p>
+    </r-cell>
+    <r-cell span=5 span-s=row>
+      <pre><code>ecs.System('A', Stages.PRE_UPDATE, ecs.Query(Position), (entities) => {});
+ecs.System('B', Stages.UPDATE, ecs.Query(Position), (entities) => {});
+ecs.System('C', Stages.PRE_UPDATE, ecs.Query(Position), (entities) => {});
+ecs.System('D', Stages.RENDER, ecs.Query(Position), (entities) => {});</code></pre>
+    </r-cell>
+    
+    <r-cell span=row>
+      <h3>Running Systems:</h3>
+    </r-cell>
+
+    <r-cell span=3 span-s=row>
+      <p>
+        The <code>ECS</code> <code>run()</code> function runs all systems <em>once</em>, 
+        meaning that the update function of each registered system is called once in the 
+        specified stage/registration order:
+      </p>
+    </r-cell>
+    <r-cell span=5 span-s=row>
+      <pre>
+<code>ecs.run();</code></pre>
+    </r-cell>
+
+    <r-cell span=3 span-s=row>
+      <p>A common setup for "infinite" system iteration is the classic game-like loop:</p>
+    </r-cell>
+    <r-cell span=5 span-s=row>
+      <pre><code>while (running) {
+  ecs.run();
+}</code></pre>
+    </r-cell>
+
+</body>
+</html>
