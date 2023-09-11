@@ -7,7 +7,8 @@
 ## Design
 This library's main goal is to provide a simple API for combining agent-behavior systems and get complex results easily. For example, Separation, Alignment and Cohesion systems combined to create a classic boid swarm behavior:
 
-![boid swarm](./docs/flock250.gif)
+<img height="300" src="./docs/flock250.gif"></img>
+
 `separation → alignment → cohesion → movement → render pipeline`
 
 ### Features
