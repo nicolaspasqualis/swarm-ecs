@@ -1,12 +1,16 @@
-# Swarm — entity component system
+# swarm — entity component system
 
-[ECS architecture](https://en.wikipedia.org/wiki/Entity_component_system) for exploring emergent behaviour in simulations or game-like systems through composition.
+[ECS architecture](https://en.wikipedia.org/wiki/Entity_component_system) for easier experimentation with emergent behavior in simulations and game-like systems.
 
-## [Demo ↗](./demo/index.html)
-
-![swarm](./demo/swarm.png)
+### [Explanation and demo site](https://nicolaspasqualis.github.io/swarm-ecs/)
 
 ## Design
+This library's main goal is to provide a simple API for combining agent-behavior systems and get complex results easily. For example, Separation, Alignment and Cohesion systems combined to create a classic boid swarm behavior:
+
+![boid swarm](./docs/flock250.gif)
+`separation → alignment → cohesion → movement → render pipeline`
+
+### Features
 - Indexed query results for constant-time lookup
 - Bitmask based archetype resolution **limited to 32 components** per ECS instance
 - Queries with support for ALL, ANY and NONE operators
@@ -15,32 +19,11 @@
 - OOP-like entity/component interface
 - Archetypal architecture but without focus on memory layout/cache locality
 
-
-![diagram](./demo/diagram.svg)
-
-```typescript
-const ecs = ECS();
-const Position = ComponentType<{ x: number, y: number }>();
-
-const entity = ecs.Entity();
-entity.addComponent(Position.create({ x: 50, y: 50 }));
-
-ecs.System('movement', Stages.UPDATE, 
-  ecs.Query(Position), (entities) => {
-    for (const entity of entities) {
-      const position = entity.getComponent(Position)?.data;
-
-      if (!position) continue;
-
-      position.x += 1;
-      position.y += 1;
-    }
-  }
-);
-```
+### Internal structure
+![](./docs/diagram.svg)
 
 
-## Basic Usage
+## Basic usage
 
 ### Creating an ECS instance
 ```typescript
