@@ -16,6 +16,8 @@
 <li><a href="Query.html">Query</a></li></ul>
 <h1>Type alias Query</h1></div>
 <div class="tsd-signature"><span class="tsd-kind-type-alias">Query</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span><br/><span>    </span><span class="tsd-kind-property">filter</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">entities</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><a href="Entity.html" class="tsd-signature-type tsd-kind-type-alias">Entity</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">match</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">entity</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">; </span><br/><span class="tsd-signature-symbol">}</span></div>
+<div class="tsd-comment tsd-typography"><p>Represents a Query for filtering entities based on certain conditions.</p>
+</div>
 <div class="tsd-type-declaration">
 <h4>Type declaration</h4>
 <ul class="tsd-parameters">
@@ -26,12 +28,19 @@
 <ul class="tsd-signatures">
 <li class="tsd-signature" id="__type.filter.__type-1.__type-2"><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">entities</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="Entity.html" class="tsd-signature-type tsd-kind-type-alias">Entity</a><span class="tsd-signature-symbol">[]</span></li>
 <li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Filters a list of entities based on the query.</p>
+</div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5><span class="tsd-kind-parameter">entities</span>: <a href="Entity.html" class="tsd-signature-type tsd-kind-type-alias">Entity</a><span class="tsd-signature-symbol">[]</span></h5></li></ul></div>
-<h4 class="tsd-returns-title">Returns <a href="Entity.html" class="tsd-signature-type tsd-kind-type-alias">Entity</a><span class="tsd-signature-symbol">[]</span></h4></li></ul></li></ul></li>
+<h5><span class="tsd-kind-parameter">entities</span>: <a href="Entity.html" class="tsd-signature-type tsd-kind-type-alias">Entity</a><span class="tsd-signature-symbol">[]</span></h5>
+<div class="tsd-comment tsd-typography"><p>The list of entities to filter.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <a href="Entity.html" class="tsd-signature-type tsd-kind-type-alias">Entity</a><span class="tsd-signature-symbol">[]</span></h4><p>A filtered list of entities that match the query.</p>
+
+<div class="tsd-comment tsd-typography"></div></li></ul></li></ul></li>
 <li class="tsd-parameter">
 <h5><span class="tsd-kind-property">match</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">entity</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span></h5>
 <ul class="tsd-parameters">
@@ -39,14 +48,22 @@
 <ul class="tsd-signatures">
 <li class="tsd-signature" id="__type.match.__type-3.__type-4"><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">entity</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
 <li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Determines if a given entity matches with the query.</p>
+</div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5><span class="tsd-kind-parameter">entity</span>: <a href="Entity.html" class="tsd-signature-type tsd-kind-type-alias">Entity</a></h5></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4></li></ul></li></ul></li></ul></div><aside class="tsd-sources">
+<h5><span class="tsd-kind-parameter">entity</span>: <a href="Entity.html" class="tsd-signature-type tsd-kind-type-alias">Entity</a></h5>
+<div class="tsd-comment tsd-typography"><p>The entity to check against the query.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4><p>True if the entity matches, otherwise false.</p>
+
+<div class="tsd-comment tsd-typography"></div></li></ul></li></ul></li></ul></div>
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nicolaspasqualis/swarm-entity-component-system/blob/b7933ba/lib/query.ts#L6">query.ts:6</a></li></ul></aside></div>
+<li>Defined in <a href="https://github.com/nicolaspasqualis/swarm-entity-component-system/blob/b981056/lib/query.ts#L10">query.ts:10</a></li></ul></aside></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

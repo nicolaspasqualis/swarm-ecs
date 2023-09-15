@@ -1,10 +1,11 @@
 import { System, Stage } from "./system";
 
+/** Manages the scheduling of systems in an ECS architecture. */
 export type SystemScheduler = {
-  // adds a new system to the scheduler
+  /** Adds a new system to the scheduler. */
   addSystem: (system: System) => void;
 
-  // returns the list of systems in execution order
+  /** Gets the list of systems in execution order. */
   getSchedule: () => System[];
 };
 
@@ -18,6 +19,10 @@ export const Stages = {
   RENDER: "RENDER",
 } as const;
 
+/** 
+ * Type representing the default execution stages.
+ * Check {@link DefaultOrder} for the default ordering used by the {@link SystemScheduler}.
+ */
 export type Stages = (typeof Stages)[keyof typeof Stages];
 
 const DefaultOrder = [
@@ -30,7 +35,7 @@ const DefaultOrder = [
   Stages.RENDER,
 ];
 
-// Initializes a stage-based scheduler from a list of stage names in order of execution
+/** Initializes a stage-based scheduler from a list of stage names in order of execution */
 export function StageBasedScheduler(executionStages: Stage[] = DefaultOrder): SystemScheduler {
   const systemsByStage = new Map(
     executionStages.map((stage) => [stage as Stage, [] as System[]])

@@ -3,19 +3,24 @@ import { Entity } from "./entity";
 
 export type Stage = string;
 
+/** 
+ * Represents a system in an ECS architecture. 
+ * @typedef {object} System
+ */
 export type System = {
-  // Name used to identify the system
+  /** The name identifying the system. */
   name: string;
 
-  // Stage in which the system should be executed
+  /** The stage in which the system is executed. */
   stage: Stage;
 
-  // Query used to fetch the required entities on each tick
+  /** The query used to fetch relevant entities each tick. */
   query: Query;
   
-  // Runs the system one tick
+  /** Advances the system by one tick. */
   update: (entities: Entity[]) => void;
-}
+};
+
 
 export const System = (name: string, stage: Stage, query: Query, logic: (entities: Entity[]) => void)
 : System => ({ 
