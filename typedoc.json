@@ -1,0 +1,5 @@
+{
+    "out": "./docs/typedoc",
+    "entryPoints": ["./lib"],
+    "readme": "none",
+  }

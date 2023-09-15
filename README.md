@@ -118,3 +118,5 @@ while (running) {
   ecs.run();
 }
 ```
+
+### [API Reference](https://nicolaspasqualis.github.io/swarm-ecs/typedoc/index.html)
