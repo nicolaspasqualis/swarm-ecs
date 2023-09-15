@@ -2,7 +2,7 @@
 
 [ECS architecture](https://en.wikipedia.org/wiki/Entity_component_system) for easier experimentation with emergent behavior in simulations and game-like systems.
 
-### [Explanation and demo site](https://nicolaspasqualis.github.io/swarm-ecs/)
+### [Documentation and reference site `↗`](https://nicolaspasqualis.github.io/swarm-ecs/)
 
 ## Design
 This library's main goal is to provide a simple API for combining agent-behavior systems and get complex results easily. For example, Separation, Alignment and Cohesion systems combined to create a classic boid swarm behavior:
@@ -118,5 +118,7 @@ while (running) {
   ecs.run();
 }
 ```
+
+<hr>
 
 ### [API Reference](https://nicolaspasqualis.github.io/swarm-ecs/typedoc/index.html)
