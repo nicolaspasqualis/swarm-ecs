@@ -44,6 +44,9 @@ h3, h4, h5, h6 { font-weight: 480 !important; }
   border-bottom: 2px solid black;
 }
 
+a {
+  text-decoration: none;
+}
 
 video, video:first-child, video:last-child {
   display:block;
@@ -86,7 +89,6 @@ video.right.bottom { -o-object-position: right bottom; object-position: right bo
     <r-cell span=5 span-s=row style="align-self: end;">
         <h2><a class="underline" href="https://en.wikipedia.org/wiki/Entity_component_system">ECS architecture↗</a> for easier experimentation with emergent behavior in simulations and game-like systems.</h2>
         
-    <h3>/<a class="underline" href="./typedoc/index.html">api reference</a> /<a class="underline" href="https://github.com/nicolaspasqualis/swarm-ecs">source</a></h3>
     </r-cell>
     
     <hr>
@@ -100,6 +102,11 @@ video.right.bottom { -o-object-position: right bottom; object-position: right bo
     </r-cell>
     <r-cell span=3 span-s=row>
       <p>This library's main goal is to provide a simple API for combining agent-behavior systems and get complex results easily</p>
+      
+      <ul class="compact">
+        <li><a class="underline" href="./typedoc/index.html">api reference↗</a></li>
+        <li><a class="underline" href="https://github.com/nicolaspasqualis/swarm-ecs">source↗</a></li>
+      </ul>
     </r-cell>
     <r-cell span=3 span-s=row >
       <p><code><b>Separation</b></code>, <code><b>Alignment</b></code> and <code><b>Cohesion</b></code> systems combined to create a classic boid swarm behavior:</p>
@@ -119,11 +126,10 @@ video.right.bottom { -o-object-position: right bottom; object-position: right bo
         <li>Archetypal architecture but <b>without focus on memory layout</b>/cache locality</li>
       </ol>
       
-    <br>
     </r-cell>
+    <r-cell span=row><br></r-cell>
 
-
-    <r-cell span=row span-s=row>
+    <r-cell span=3 span-s=row>
       <p>Architecture:</p>
       <img src="diagram.svg" class="h-8 top" ></img>
       <br>
