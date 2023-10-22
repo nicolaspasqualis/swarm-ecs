@@ -76,6 +76,10 @@ function IdManager(): IdManager {
   };
 }
 
+/**
+ * Creates a new ECS instance.
+ * @returns {ECS} An instance of the ECS.
+ */
 export function ECS(): ECS {
   const archetypeResolver: ArchetypeResolver = BitmaskArchetypeResolver();
   const entityIndex: EntityIndex = EntitiesByQueryIndex();

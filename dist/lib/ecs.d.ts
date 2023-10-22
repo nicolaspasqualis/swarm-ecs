@@ -43,4 +43,8 @@ export type ECS = {
      */
     run: () => void;
 };
+/**
+ * Creates a new ECS instance.
+ * @returns {ECS} An instance of the ECS.
+ */
 export declare function ECS(): ECS;

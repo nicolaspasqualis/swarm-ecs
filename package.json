@@ -1,6 +1,7 @@
 {
   "dependencies": {
-    "p5": "^1.7.0"
+    "p5": "^1.7.0",
+    "typedoc-plugin-missing-exports": "^2.1.0"
   },
   "devDependencies": {
     "@types/p5": "^1.6.2",
@@ -10,6 +11,6 @@
     "webpack-cli": "^5.1.4"
   },
   "scripts": {
-    "build": "webpack && typedoc"
+    "build": "webpack && typedoc --plugin typedoc-plugin-missing-exports"
   }
 }

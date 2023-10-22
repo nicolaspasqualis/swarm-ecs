@@ -57,4 +57,11 @@ export type ArchetypeResolver = {
      */
     merge: (masks: Archetype[]) => Archetype;
 };
+/**
+ * Creates a new BitmaskArchetypeResolver.
+ * This resolver utilizes a {@link Bitmask} representation for archetypes, offering efficient operations but
+ * with a maximum limit of 32 components, due to `number` bit length in most engines.
+ *
+ * @returns {ArchetypeResolver} An object implementing the ArchetypeResolver interface using bitmasks.
+ */
 export declare function BitmaskArchetypeResolver(): ArchetypeResolver;

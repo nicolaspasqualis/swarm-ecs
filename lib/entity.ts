@@ -49,7 +49,16 @@ export type Entity = {
    */
   deleteComponent: (component: Component) => void;
 };
-  
+
+/**
+ * Creates a new Entity with the given parameters.
+ * 
+ * @param {number} id - The unique identifier for the entity.
+ * @param {ArchetypeResolver} archetypeResolver - Resolver to manage the entity's archetype.
+ * @param {EntityIndex} entityIndex - Index to manage the entity.
+ * 
+ * @returns {Entity} A new entity instance.
+ */
 export function Entity(id: number, archetypeResolver: ArchetypeResolver, entityIndex: EntityIndex): Entity {
   const components = new Map<symbol, any>();
   let archetype: Archetype = 0;

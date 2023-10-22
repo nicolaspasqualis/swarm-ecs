@@ -14,6 +14,12 @@ export type Component = {
      */
     data: any;
 };
+/**
+ * Defines a new component type with a unique symbol and associated data.
+ *
+ * @template T - The data schema for the component.
+ * @returns {object} An object with properties: type, data, and a create function.
+ */
 export declare function ComponentType<T>(): {
     type: symbol;
     data: T;
