@@ -4,7 +4,7 @@
     "typedoc-plugin-missing-exports": "^2.1.0"
   },
   "devDependencies": {
-    "@types/p5": "^1.6.2",
+    "@types/p5": "^1.7.1",
     "ts-loader": "^9.4.4",
     "typedoc": "^0.25.1",
     "webpack": "^5.88.2",
