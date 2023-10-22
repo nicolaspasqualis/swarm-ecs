@@ -1,5 +1,8 @@
 {
+    "name": "swarm — API reference",
+    "readme": "./docs/typedoc.md",
     "out": "./docs/typedoc",
     "entryPoints": ["./lib"],
-    "readme": "none",
+    "excludeExternals": true,
+    "hideGenerator": true,
   }
