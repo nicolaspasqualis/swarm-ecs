@@ -5,7 +5,7 @@
 ### [Documentation and reference site `↗`](https://nicolaspasqualis.github.io/swarm-ecs/)
 
 ## Design
-This library's main goal is to provide a simple API for combining agent-behavior systems and get complex results easily. For example, Separation, Alignment and Cohesion systems combined to create a classic boid swarm behavior:
+This library's main goal is to provide a simple API for combining agent-behavior systems and getting complex results easily. For example, Separation, Alignment and Cohesion systems combined to create a classic boid swarm behavior:
 
 <img height="300" src="./docs/flock250.gif"></img>
 
