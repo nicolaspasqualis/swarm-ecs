@@ -1,10 +1,10 @@
 {
   "dependencies": {
-    "p5": "^1.7.0",
+    "p5": "^1.9.2",
     "typedoc-plugin-missing-exports": "^2.1.0"
   },
   "devDependencies": {
-    "@types/p5": "^1.6.2",
+    "@types/p5": "^1.7.6",
     "ts-loader": "^9.5.1",
     "typedoc": "^0.25.4",
     "webpack": "^5.88.2",
