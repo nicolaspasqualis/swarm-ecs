@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "p5": "^1.7.0",
-    "typedoc-plugin-missing-exports": "^2.2.0"
+    "typedoc-plugin-missing-exports": "^2.3.0"
   },
   "devDependencies": {
     "@types/p5": "^1.6.2",
