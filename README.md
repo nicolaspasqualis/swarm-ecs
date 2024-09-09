@@ -1,28 +1,25 @@
 # swarm — entity component system
 
-[ECS architecture](https://en.wikipedia.org/wiki/Entity_component_system) for easier experimentation with emergent behavior in simulations and game-like systems.
+Modular [ECS architecture](https://en.wikipedia.org/wiki/Entity_component_system) implementation for composing simulation and game-like systems' behaviors.
 
-### [Documentation and reference site `↗`](https://nicolaspasqualis.github.io/swarm-ecs/)
+### [Dosc / API Reference](https://nicolaspasqualis.github.io/swarm-ecs/typedoc/index.html)
 
-## Design
-This library's main goal is to provide a simple API for combining agent-behavior systems and getting complex results easily. For example, Separation, Alignment and Cohesion systems combined to create a classic boid swarm behavior:
+While this library implements a generic ECS, its main goal is to provide a friendly API for combining agent-behavior systems and achieving complex results easily. An example is the classic boid swarm, which can be built by combining Separation, Alignment, and Cohesion systems:
 
 <img height="300" src="./docs/flock250.gif"></img>
 
 `separation → alignment → cohesion → movement → render pipeline`
 
 ### Features
-- Indexed query results for constant-time lookup
-- Bitmask based archetype resolution **limited to 32 components** per ECS instance
-- Queries with support for ALL, ANY and NONE operators
-- Simple stage-based system execution ordering
-- Typed components API
-- OOP-like entity/component interface
-- Archetypal architecture but without focus on memory layout/cache locality
+- Cached queries with constant-time lookup.
+- Bitmask-based archetype resolution **limited to 32 components** per ECS instance.
+- Queries with support for ALL, ANY, and NONE operators.
+- Simple stage-based system execution ordering.
+- Typed components API.
+- OOP-like entity/component interface.
+- Archetypal model but without focus on memory layout/cache locality for now.
 
-### Internal structure
 ![](./docs/diagram.svg)
-
 
 ## Basic usage
 
